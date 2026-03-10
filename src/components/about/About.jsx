@@ -2,6 +2,7 @@ import React from "react";
 import { motion, useViewportScroll, useTransform } from "framer-motion";
 import CountUp from "react-countup";
 import RoverCanvas from "./Rover";
+import OrbitalSystem from "./OrbitalSystem";
 
 const About = () => {
     const { scrollY } = useViewportScroll();
@@ -32,6 +33,11 @@ const About = () => {
                     <div className="w-full lg:w-1/2 h-64 sm:h-72 md:h-80 lg:h-96">
                         <RoverCanvas />
                     </div>
+                </div>
+
+                {/* Orbital System Block */}
+                <div className="relative z-5 flex justify-center items-center mt-16 mb-16 w-full">
+                    <OrbitalSystem />
                 </div>
 
                 {/* CountUp Section */}

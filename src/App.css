@@ -96,6 +96,10 @@ body {
   }
 }
 
+#About {
+  min-height: 180vh;
+}
+
 #Events {
   height: 90vh;
 }
