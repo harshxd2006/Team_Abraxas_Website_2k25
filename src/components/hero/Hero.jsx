@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { motion, useAnimation } from 'framer-motion';
+import React, { useEffect, useState, useRef } from 'react';
+import { motion, useAnimation, useScroll, useMotionValueEvent } from 'framer-motion';
 import { Instagram, Linkedin } from 'lucide-react';
 import Menu from '../hero/Menu';
 import Atom from '../hero/Atom';
@@ -81,105 +81,130 @@ const contentAnimation = {
 };
 
 // Rest of the component remains the same
+const AnimatedWord = ({ children, isLit }) => {
+    return (
+        <motion.span
+            animate={{
+                opacity: isLit ? 1 : 0.15,
+            }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            style={{ color: "rgba(255, 255, 255, 1)" }}
+            className="mr-[0.3em] inline-block"
+        >
+            {children}
+        </motion.span>
+    );
+};
+
+const quoteText = "the story of abraxas begins with curiosity. we believe individuals who dare to question the universe deserve better: better ideas, better experiments, better futures. this is the standard we hold ourselves to.";
+const words = quoteText.split(" ");
+
 const Hero = () => {
     const controls = useAnimation();
-    const [scrollY, setScrollY] = useState(0);
+    const quoteContainerRef = useRef(null);
+    const [litWords, setLitWords] = useState([]);
+
+    const { scrollYProgress } = useScroll({
+        target: quoteContainerRef,
+        offset: ["start start", "end end"]
+    });
+
+    useMotionValueEvent(scrollYProgress, "change", (latest) => {
+        const newlyLit = [];
+        words.forEach((_, i) => {
+            const threshold = i / words.length;
+            if (latest >= threshold && !litWords.includes(i)) {
+                newlyLit.push(i);
+            }
+        });
+
+        if (newlyLit.length > 0) {
+            // Functional state update ensuring we only ever append, never remove
+            setLitWords((prev) => [...new Set([...prev, ...newlyLit])]);
+        }
+    });
 
     useEffect(() => {
         controls.start('animate');
     }, [controls]);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setScrollY(window.scrollY);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
     return (
-        <div className="relative min-h-screen bg-black text-white overflow-hidden">
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="stars"></div>
+        <React.Fragment>
+            <div id="Home" className="relative z-[1] min-h-[100vh] bg-black text-white overflow-hidden pb-16 flex flex-col justify-center items-center w-full">
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="stars"></div>
+                </div>
+
+                {/* 100vh Atom and Heading section */}
+                <div className="flex flex-col items-center justify-center w-full z-10">
+                    <motion.div
+                        variants={atomAnimation}
+                        initial="initial"
+                        animate="animate"
+                        className="max-w-[200px] sm:max-w-[250px] md:max-w-[300px] lg:max-w-[350px] mb-8"
+                    >
+                        <Atom />
+                    </motion.div>
+
+                    <motion.div
+                        variants={teamNameAnimation}
+                        initial="initial"
+                        animate="animate"
+                        className="text-center w-full"
+                    >
+                        <div className="inline-block">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-blue-800 transition-all duration-300">
+                                TEAM ABRAXAS
+                            </h2>
+                            <div className="h-0.5 bg-gradient-to-r from-blue-400 to-purple-500 mt-2"></div>
+                        </div>
+                    </motion.div>
+                </div>
+
+                {/* Social Icons before the section ends */}
+                <div className="relative z-20 flex justify-center space-x-6 sm:space-x-8 md:space-x-10 mt-12 pb-[5vh]">
+                    <motion.a
+                        href="https://www.instagram.com/team_abraxas"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.1, y: -5 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="text-pink-500 hover:text-pink-400 transition-colors duration-300"
+                    >
+                        <Instagram className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
+                    </motion.a>
+                    <motion.a
+                        href="https://www.linkedin.com/company/abraxas-nith/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.1, y: -5 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="text-blue-500 hover:text-blue-400 transition-colors duration-300"
+                    >
+                        <Linkedin className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
+                    </motion.a>
+                </div>
             </div>
 
-            <motion.div 
-                variants={staggerChildren}
-                initial="initial"
-                animate="animate"
-                className="relative z-10 flex flex-col justify-center min-h-screen px-3 sm:px-4 md:px-6 lg:px-8"
-            >
-                <div className="w-full max-w-6xl mx-auto">
-                    <div className="flex flex-col items-center">
-                        {/* Atom Animation */}
-                        <motion.div 
-                            variants={atomAnimation}
-                            className="max-w-[200px] sm:max-w-[250px] md:max-w-[300px] lg:max-w-[350px] mb-4 sm:mb-6 md:mb-8 lg:mb-10"
-                        >
-                            <Atom />
-                        </motion.div>
-
-                        {/* Team Name */}
-                        <motion.div 
-                            variants={teamNameAnimation}
-                            className="mb-4 sm:mb-6 md:mb-8 lg:mb-12 text-center w-full"
-                        >
-                            <div className="inline-block">
-                                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-blue-800 transition-all duration-300">
-                                    TEAM ABRAXAS
-                                </h2>
-                                <div className="h-0.5 bg-gradient-to-r from-blue-400 to-purple-500 mt-2"></div>
-                            </div>
-                        </motion.div>
-
-                        {/* Main Content */}
-                        <motion.div 
-                            variants={contentAnimation}
-                            className="text-center w-full max-w-xs sm:max-w-sm md:max-w-xl lg:max-w-2xl px-4"
-                        >
-                            <p className="mb-10">"Life, much like physics, full of forces acting on you. It's not about avoiding them, but learning how to balance and use them to propel yourself forward."</p>
-
-                            <div className="flex justify-center space-x-6 sm:space-x-8 md:space-x-10">
-                                <motion.a
-                                    href="https://www.instagram.com/team_abraxas"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    whileHover={{ scale: 1.1, y: -5 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    className="text-pink-500 hover:text-pink-400 transition-colors duration-300"
-                                >
-                                    <Instagram className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
-                                </motion.a>
-                                <motion.a
-                                    href="https://www.linkedin.com/company/abraxas-nith/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    whileHover={{ scale: 1.1, y: -5 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    className="text-blue-500 hover:text-blue-400 transition-colors duration-300"
-                                >
-                                    <Linkedin className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
-                                </motion.a>
-                            </div>
-                        </motion.div>
+            {/* 300vh wrapper for scroll text */}
+            <div ref={quoteContainerRef} className="relative z-[5] bg-black h-[300vh] w-full">
+                <div className="sticky top-0 h-[100vh] w-full flex items-center justify-start px-[5vw]">
+                    <div className="flex flex-col items-start w-full">
+                        <div className="text-white uppercase font-sans font-semibold mb-6" style={{ fontSize: "0.75rem", letterSpacing: "0.3em" }}>
+                            NOT EVERYONE QUESTIONS WHY.
+                        </div>
+                        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2rem, 4vw, 3.5rem)", lineHeight: 1.4, maxWidth: "80vw" }} className="text-left lowercase text-white">
+                            {words.map((word, i) => (
+                                <AnimatedWord key={i} isLit={litWords.includes(i)}>
+                                    {word}
+                                </AnimatedWord>
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-                className="absolute bottom-0 left-0 w-full h-8 sm:h-12 md:h-16 lg:h-20 overflow-hidden"
-                style={{
-                    background: 'linear-gradient(to right, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1))'
-                }}
-            >
-                <motion.div
-                    className="absolute top-0 left-0 w-[200%] h-full flex"
-                    style={{ transform: `translateX(${-scrollY * 0.5}px)` }}
-                >
-                    <img src="/design2.png" alt="Decorative strip" className="w-1/2 h-full object-cover opacity-50" />
-                    <img src="/design2.png" alt="Decorative strip" className="w-1/2 h-full object-cover opacity-50" />
-                </motion.div>
-            </motion.div>
+
 
             <style jsx>{`
                 @keyframes animStar {
@@ -207,7 +232,7 @@ const Hero = () => {
                     }
                 }
             `}</style>
-        </div>
+        </React.Fragment>
     );
 };
 

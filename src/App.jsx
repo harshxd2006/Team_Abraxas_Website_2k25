@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/navbar/Navbar';
@@ -56,10 +56,8 @@ function App() {
                     speedFactor={0.15}
                     backgroundColor="black"
                   />
-                  <section id='Home'>
-                    <Hero />
-                  </section>
-                  <section id='About' className='md:mt-3' >
+                  <Hero />
+                  <section id='About' className='relative z-10 bg-black md:mt-3' >
                     <About />
                   </section>
                   <section id='Projects' className='sm:mt-52 mt-52 md:mt-72 '>

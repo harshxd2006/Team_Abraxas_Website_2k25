@@ -9,7 +9,7 @@ const About = () => {
     const textXOut = useTransform(scrollY, [300, 1000], [0, 500]);
 
     return (
-        <div className="min-h-screen relative flex flex-col justify-start items-center bg-black text-white py-8 sm:py-12 md:py-16 lg:py-24">
+        <div className="relative z-10 min-h-screen flex flex-col justify-start items-center bg-black text-white py-8 sm:py-12 md:py-16 lg:py-24">
             {/* Main Content */}
             <motion.div
                 className="z-10 flex flex-col w-full max-w-6xl px-4 sm:px-6 lg:px-8"

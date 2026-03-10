@@ -62,7 +62,6 @@
 
 
 html {
-  scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
 }
 
@@ -74,10 +73,6 @@ html {
 }
 
 
-section {
-  height: 100vh;
-  scroll-snap-align: center;
-}
 
 body {
   background-color: #000000;
